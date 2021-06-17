@@ -10,28 +10,27 @@ class Organism {
         this.velocityIndex = 0;
         this.fitness = 0;
         this.dead = false;
+        this.hitGoal = false;
     }
 
 
     draw() {
         if (!this.dead) {
-            console.log(this.pos.y);
+            //console.log(this.pos.y + " | " + height+ " | " + windowHeight);
             point(this.pos);
             strokeWeight(15);
+
+            if(goal.intersects(this.pos.x, this.pos.y)) this.hitGoal = true;
         }
     }
 
     updatePosition() {
-        if (!this.dead) {
+        if (!this.dead && !this.hitGoal) {
             this.pos.add(this.velocity);
             this.velocity.add(this.dna.genes[this.velocityIndex]);
             this.velocity.limit(this.maxSpeed);
             this.velocityIndex++;
         }
-    }
-
-    resetPosition() {
-        
     }
 
     checkIfDead() {
@@ -47,10 +46,17 @@ class Organism {
         if (goal.intersects(this.pos.x, this.pos.y)) {
             this.fitness = 1;
         } else if (this.dead) {
-            this.fitness = 0;
+            this.fitness = .01;
         } else {
             let distance = dist(this.pos.x, this.pos.y, goal.x, goal.y);
-            //console.log(distance / height);
+            this.fitness = 1 - (distance / height);
+        }
+    }
+
+    addToMatingPoolNaturalSelection() {
+        let selectionFactor = Math.trunc(this.fitness * 100);
+        for(let j = 0; j < selectionFactor; j++) {
+            matingPool.push(this);
         }
     }
 }

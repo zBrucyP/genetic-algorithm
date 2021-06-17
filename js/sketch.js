@@ -2,8 +2,9 @@ let fr = 60; //starting FPS
 let frameCount = 0;
 let generationCount = 0;
 let goal = null;
-const organismCount = 15;
-const organisms = [];
+let organisms = [];
+let matingPool = [];
+const organismCount = 30;
 
 
 function setup() {
@@ -19,6 +20,7 @@ function draw() {
     textSize(25);
     text(`Frame: ${frameCount}`, windowWidth*.05, windowHeight*.1);
     text(`Generation: ${generationCount}`, windowWidth*.05, windowHeight*.9);
+    text(`Average Fitness: ${getAverageFitness()}`, windowWidth*.05, windowHeight*.95);
     if (frameCount > 300) {
         endRound();
     }
@@ -39,9 +41,6 @@ function initializeOrganisms() {
 //https://towardsdatascience.com/introduction-to-genetic-algorithms-including-example-code-e396e98d8bf3
 //https://dev.to/lukegarrigan/genetic-algorithms-in-javascript-mc3
 
-// 3. Selection
-
-// 4. Reproduction
 
 // 5. Mutation
 
@@ -65,9 +64,24 @@ function endRound() {
     generationCount++;
 
     for (let i = 0; i < organisms.length; i++) {
+        // 2. Calculate Organism's fitness
         organisms[i].calculateFitnessScore();
-        organisms[i].resetPosition();
+
+        // 3. Selection
+        organisms[i].addToMatingPoolNaturalSelection();
+
+        // 4. Reproduction
     }
 
-    loop();
+    console.log(matingPool);
+
+    //loop();
+}
+
+function getAverageFitness() {
+    let sum = 0;
+    for (let i = 0; i < organisms.length; i++) {
+        sum += organisms[i].fitness;
+    }
+    return (sum / organisms.length).toFixed(2);
 }
