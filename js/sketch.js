@@ -36,6 +36,9 @@ function initializeOrganisms() {
 
 
 
+//https://towardsdatascience.com/introduction-to-genetic-algorithms-including-example-code-e396e98d8bf3
+//https://dev.to/lukegarrigan/genetic-algorithms-in-javascript-mc3
+
 // 3. Selection
 
 // 4. Reproduction
