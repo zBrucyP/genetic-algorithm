@@ -1,13 +1,32 @@
 class DNA {
-    constructor() {
-        this.genes = this.createGenes();
+    constructor(generateGenes=true) {
+        if (generateGenes) {
+            this.genes = this.createGenes();
+        } else {
+            this.genes = [];
+        }
     }
 
     createGenes() {
         let result = [];
-        for (let i = 0; i < 1111; i++ ) {
+        for (let i = 0; i < endRoundFrameCount+25; i++ ) {
             result.push(p5.Vector.random2D());
         }
         return result;
+    }
+
+    // crossover two sets of dna
+    static reproduce(momDNA, dadDNA) {
+        let offspringDNA = new DNA(false);
+        console.log(momDNA);
+        for (let i = 0; i < momDNA.genes.length; i++) {
+            if (i % 2 === 0) {
+                offspringDNA.genes.push(momDNA.genes[i]);
+            } else {
+                offspringDNA.genes.push(dadDNA.genes[i]);
+            }
+        }
+        //console.log(offspringDNA);
+        return offspringDNA;
     }
 }

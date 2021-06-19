@@ -1,0 +1,23 @@
+{
+  "name": "genetic-algorithm",
+  "version": "1.0.0",
+  "description": "Natural Selection algorithm sandbox",
+  "main": "\u001b[D\u001bhtml)",
+  "dependencies": {
+    "eslint": "^7.29.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zBrucyP/genetic-algorithm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zBrucyP/genetic-algorithm/issues"
+  },
+  "homepage": "https://github.com/zBrucyP/genetic-algorithm#readme"
+}

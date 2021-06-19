@@ -59,4 +59,12 @@ class Organism {
             matingPool.push(this);
         }
     }
+
+    getDNA() {
+        return this.dna;
+    }
+
+    setDNA(newDNA) {
+        this.dna = newDNA;
+    }
 }
