@@ -18,15 +18,18 @@ class DNA {
     // crossover two sets of dna
     static reproduce(momDNA, dadDNA) {
         let offspringDNA = new DNA(false);
-        console.log(momDNA);
         for (let i = 0; i < momDNA.genes.length; i++) {
-            if (i % 2 === 0) {
+            let mutate = random();
+            if (mutate < mutationRate) {
+                offspringDNA.genes.push(p5.Vector.random2D());
+            } 
+            else if (i % 2 === 0) {
                 offspringDNA.genes.push(momDNA.genes[i]);
-            } else {
+            } 
+            else {
                 offspringDNA.genes.push(dadDNA.genes[i]);
             }
         }
-        //console.log(offspringDNA);
         return offspringDNA;
     }
 }

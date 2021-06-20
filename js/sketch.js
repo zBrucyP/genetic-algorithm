@@ -1,12 +1,19 @@
-let fr = 60; //starting FPS
+// References:
+// https://towardsdatascience.com/introduction-to-genetic-algorithms-including-example-code-e396e98d8bf3
+// https://dev.to/lukegarrigan/genetic-algorithms-in-javascript-mc3
+
+let fr = 90; //starting FPS
 let frameCount = 0;
 let generationCount = 0;
 let endRoundFrameCount = 300;
 let goal = null;
 let organisms = [];
 let matingPool = [];
-let mutationRate = .1;
-const organismCount = 30;
+let mutationRate = .02;
+let averageFitnessLastRound = 0;
+let medianFitnessLastRound = 0;
+let numberSuccessLastRound = 0;
+const organismCount = 50;
 
 
 function setup() {
@@ -19,10 +26,17 @@ function setup() {
 function draw() {
     background(230);
     frameCount++;
+
+    // texts
     textSize(25);
-    text(`Frame: ${frameCount}`, windowWidth*.05, windowHeight*.1);
-    text(`Generation: ${generationCount}`, windowWidth*.05, windowHeight*.9);
-    text(`Average Fitness: ${getAverageFitness()}`, windowWidth*.05, windowHeight*.95);
+    text(`Generation: ${generationCount}`, windowWidth*.05, windowHeight*.05);
+    text(`Mutation Rate: ${mutationRate}`, windowWidth*.05, windowHeight*.1);
+    text(`Frame: ${frameCount}`, windowWidth*.05, windowHeight*.15);
+    text(`Num Succeeded Last Gen: ${numberSuccessLastRound}`, windowWidth*.05, windowHeight*.85);
+    text(`Average Fitness Last Gen: ${averageFitnessLastRound}`, windowWidth*.05, windowHeight*.9);
+    text(`Median Fitness Last Gen: ${medianFitnessLastRound}`, windowWidth*.05, windowHeight*.95);
+
+    // check end of generation round condition
     if (frameCount > endRoundFrameCount) {
         endRound();
     }
@@ -37,15 +51,6 @@ function initializeOrganisms() {
         organisms.push(new Organism());
     }
 }
-
-
-
-//https://towardsdatascience.com/introduction-to-genetic-algorithms-including-example-code-e396e98d8bf3
-//https://dev.to/lukegarrigan/genetic-algorithms-in-javascript-mc3
-
-
-// 5. Mutation
-
 
 function drawOrganisms() {
     for (let i = 0; i < organisms.length; i++) {
@@ -75,27 +80,56 @@ function endRound() {
         organisms[i].addToMatingPoolNaturalSelection();
     }
 
+    // measure generation performance
+    const fitnessScores = organisms.map(org => org.fitness);
+    averageFitnessLastRound = getAverageFitness(fitnessScores);
+    medianFitnessLastRound = getMedianFitness(fitnessScores);
+    getNumberSucceededLastRound();
+    console.log(`${generationCount} | Average fitness: ${averageFitnessLastRound}`);
+    console.log(`${generationCount} | Median fitness: ${medianFitnessLastRound}`);
+    console.log(`${generationCount} | Num Succeeded: ${numberSuccessLastRound}`);
+
     for(let j = 0; j < organisms.length; j++) {
         // 4. Reproduction
+        // 5. Mutation
         // replace each org from current gen with offspring from mating pool
+        // give chance of mutation
         organisms[j] = generateOffspringFromMatingPool();
     }
 
     // clear mating pool for next round
-    matingPool = [];    
+    matingPool = [];
 
-    if (generationCount < 2) {
-
-        loop();
-    }
+    loop();
 }
 
-function getAverageFitness() {
-    let sum = 0;
-    for (let i = 0; i < organisms.length; i++) {
-        sum += organisms[i].fitness;
+function getAverageFitness(values) {
+    let sum = values.reduce((acc, currVal) => acc + currVal);
+    return (sum / values.length).toFixed(2);
+}
+
+function getMedianFitness(values) {
+    if(values.length ===0) return 0;
+  
+    values.sort(function(a,b){
+      return a-b;
+    });
+  
+    var half = Math.floor(values.length / 2);
+  
+    if (values.length % 2)
+      return values[half];
+  
+    return ((values[half - 1] + values[half]) / 2.0).toFixed(2);
+}
+
+function getNumberSucceededLastRound() {
+    numberSuccessLastRound = 0;
+    for(org of organisms) {
+        if (org.hitGoal) {
+            numberSuccessLastRound++;
+        }
     }
-    return (sum / organisms.length).toFixed(2);
 }
 
 function generateOffspringFromMatingPool() {

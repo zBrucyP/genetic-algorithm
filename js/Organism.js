@@ -3,7 +3,7 @@ class Organism {
         let r = random();
         let startX = r * windowWidth;
 
-        this.pos = createVector(startX, 50);
+        this.pos = createVector(width/2, 50);
         this.velocity = p5.Vector.random2D();
         this.maxSpeed = 5;
         this.dna = new DNA();
@@ -16,11 +16,10 @@ class Organism {
 
     draw() {
         if (!this.dead) {
-            //console.log(this.pos.y + " | " + height+ " | " + windowHeight);
             point(this.pos);
             strokeWeight(15);
 
-            if(goal.intersects(this.pos.x, this.pos.y)) this.hitGoal = true;
+            if(goal.intersects(this.pos.x, this.pos.y))  this.hitGoal = true;
         }
     }
 
@@ -46,7 +45,7 @@ class Organism {
         if (goal.intersects(this.pos.x, this.pos.y)) {
             this.fitness = 1;
         } else if (this.dead) {
-            this.fitness = .01;
+            this.fitness = 0;
         } else {
             let distance = dist(this.pos.x, this.pos.y, goal.x, goal.y);
             this.fitness = 1 - (distance / height);
@@ -55,6 +54,7 @@ class Organism {
 
     addToMatingPoolNaturalSelection() {
         let selectionFactor = Math.trunc(this.fitness * 100);
+        if (this.fitness >= .95) selectionFactor *= 2;
         for(let j = 0; j < selectionFactor; j++) {
             matingPool.push(this);
         }
