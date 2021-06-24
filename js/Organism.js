@@ -1,7 +1,7 @@
 class Organism {
     constructor() {
         let r = random();
-        let startX = r * windowWidth;
+        let startX = r * width;
 
         this.pos = createVector(width/2, 50);
         this.velocity = p5.Vector.random2D();

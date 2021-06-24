@@ -4,12 +4,12 @@
 
 let fr = 90; //starting FPS
 let frameCount = 0;
-let generationCount = 0;
+let generationCount = 1;
 let endRoundFrameCount = 300;
 let goal = null;
 let organisms = [];
 let matingPool = [];
-let mutationRate = .02;
+let mutationRate = .01;
 let averageFitnessLastRound = 0;
 let medianFitnessLastRound = 0;
 let numberSuccessLastRound = 0;
@@ -17,24 +17,28 @@ const organismCount = 50;
 
 
 function setup() {
-    createCanvas(windowWidth, windowHeight);
+    let canvas = createCanvas(windowWidth, windowHeight);
+    canvas.parent("p5Canvas")
     frameRate(fr);
     initializeOrganisms();
-    goal = new Goal(windowWidth/2, windowHeight*.85, 50, 50);
+    goal = new Goal(width/2, height*.85, 50, 50);
   }
 
 function draw() {
     background(230);
     frameCount++;
 
+    frameRate(fr);
+
     // texts
     textSize(25);
-    text(`Generation: ${generationCount}`, windowWidth*.05, windowHeight*.05);
-    text(`Mutation Rate: ${mutationRate}`, windowWidth*.05, windowHeight*.1);
-    text(`Frame: ${frameCount}`, windowWidth*.05, windowHeight*.15);
-    text(`Num Succeeded Last Gen: ${numberSuccessLastRound}`, windowWidth*.05, windowHeight*.85);
-    text(`Average Fitness Last Gen: ${averageFitnessLastRound}`, windowWidth*.05, windowHeight*.9);
-    text(`Median Fitness Last Gen: ${medianFitnessLastRound}`, windowWidth*.05, windowHeight*.95);
+    text(`Generation: ${generationCount}`, width*.05, height*.05);
+    text(`Mutation Rate: ${mutationRate*100}%`, width*.05, height*.1);
+    text(`Frame: ${frameCount}`, width*.05, height*.15);
+    text(`Last Gen:`, width*.03, height*.8);
+    text(`Num Succeeded: ${numberSuccessLastRound}`, width*.05, height*.85);
+    text(`Average Fitness: ${averageFitnessLastRound}`, width*.05, height*.9);
+    text(`Median Fitness: ${medianFitnessLastRound}`, width*.05, height*.95);
 
     // check end of generation round condition
     if (frameCount > endRoundFrameCount) {

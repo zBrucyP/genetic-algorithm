@@ -6,3 +6,24 @@ html, body {
 canvas {
     display: block;
 }
+
+#controlsContainer {
+    display: flex;
+}
+
+.formControl {
+    margin-left: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.inputContainer {
+    display: flex;
+    align-items: center;
+}
+
+#stopStartButton{
+    background-color: lightgreen;
+    border-radius: .75em;
+    width: 6em;
+}
