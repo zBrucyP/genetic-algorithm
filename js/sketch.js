@@ -2,7 +2,7 @@
 // https://towardsdatascience.com/introduction-to-genetic-algorithms-including-example-code-e396e98d8bf3
 // https://dev.to/lukegarrigan/genetic-algorithms-in-javascript-mc3
 
-let fr = 90; //starting FPS
+let fr = 60; //starting FPS
 let frameCount = 0;
 let generationCount = 1;
 let endRoundFrameCount = 300;
@@ -13,61 +13,98 @@ let mutationRate = .01;
 let averageFitnessLastRound = 0;
 let medianFitnessLastRound = 0;
 let numberSuccessLastRound = 0;
-const organismCount = 50;
+let organismCount = 50;
+let speciesDiedOff = false;
+let gamePaused = false;
+let performanceChart = null;
+
+const maxEndRoundFrameCount = 600;
 
 
 function setup() {
     let canvas = createCanvas(windowWidth, windowHeight);
     canvas.parent("p5Canvas")
     frameRate(fr);
-    initializeOrganisms();
-    goal = new Goal(width/2, height*.85, 50, 50);
+    initializeGame();
   }
 
 function draw() {
-    background(230);
-    frameCount++;
+    
+    if (gamePaused) {
+        if (speciesDiedOff) text(`Insufficient Organisms to Reproduce!`, width*.5, height*.2);
+    } else {
+        background(230);
 
-    frameRate(fr);
-
-    // texts
-    textSize(25);
-    text(`Generation: ${generationCount}`, width*.05, height*.05);
-    text(`Mutation Rate: ${mutationRate*100}%`, width*.05, height*.1);
-    text(`Frame: ${frameCount}`, width*.05, height*.15);
-    text(`Last Gen:`, width*.03, height*.8);
-    text(`Num Succeeded: ${numberSuccessLastRound}`, width*.05, height*.85);
-    text(`Average Fitness: ${averageFitnessLastRound}`, width*.05, height*.9);
-    text(`Median Fitness: ${medianFitnessLastRound}`, width*.05, height*.95);
-
-    // check end of generation round condition
-    if (frameCount > endRoundFrameCount) {
-        endRound();
+        frameCount++;
+        frameRate(fr);
+    
+        // texts
+        textSize(25);
+        text(`Generation: ${generationCount}`, width*.05, height*.05);
+        text(`Mutation Rate: ${mutationRate*100}%`, width*.05, height*.1);
+        text(`Frame: ${frameCount}`, width*.05, height*.15);
+        text(`Last Gen:`, width*.03, height*.8);
+        text(`Num Succeeded: ${numberSuccessLastRound}`, width*.05, height*.85);
+        text(`Average Fitness: ${averageFitnessLastRound}`, width*.05, height*.9);
+        text(`Median Fitness: ${medianFitnessLastRound}`, width*.05, height*.95);
+    
+        // check end of generation round condition
+        if (frameCount > endRoundFrameCount) {
+            endRound();
+        }
+        goal.draw();
+        updateOrganisms();
     }
-    goal.draw();
-    drawOrganisms();
-    updateOrganismPosition();
+}
+
+function initializeGame() {
+    initializeOrganisms();
+    initializeGoal(width/2, height*.85, 50, 50);
+    generationCount = 1;
+    frameCount = 0;
+    matingPool = [];
+    averageFitnessLastRound = 0;
+    medianFitnessLastRound = 0;
+    numberSuccessLastRound = 0;
+    performanceChart = new Chart("Number of Organisms at Goal");
+    speciesDiedOff = false;
+    gamePaused = false; 
 }
 
 // 1. create initial generation
 function initializeOrganisms() {
+    organisms = [];
     for(let i = 0; i < organismCount; i++) {
         organisms.push(new Organism());
     }
 }
 
-function drawOrganisms() {
-    for (let i = 0; i < organisms.length; i++) {
-        organisms[i].checkIfDead();
-        organisms[i].draw();
-    }
+function initializeGoal(x, y, w, h) {
+    goal = new Goal(x, y, w, h);
 }
 
-function updateOrganismPosition() {
+function updateOrganisms() {
+    let numberAlive = 0;
     for (let i = 0; i < organisms.length; i++) {
+        organisms[i].checkIfDead();
+        if (!organisms[i].dead) numberAlive++;
+        organisms[i].draw();
         organisms[i].updatePosition();
     }
+
+    if (numberAlive < 2) speciesHasDied();
 }
+
+function speciesHasDied() {
+    speciesDiedOff = true;
+    gamePaused = true;
+}
+
+// function updateOrganismPosition() {
+//     for (let i = 0; i < organisms.length; i++) {
+//         organisms[i].updatePosition();
+//     }
+// }
 
 function endRound() {
     noLoop();
@@ -89,9 +126,12 @@ function endRound() {
     averageFitnessLastRound = getAverageFitness(fitnessScores);
     medianFitnessLastRound = getMedianFitness(fitnessScores);
     getNumberSucceededLastRound();
-    console.log(`${generationCount} | Average fitness: ${averageFitnessLastRound}`);
-    console.log(`${generationCount} | Median fitness: ${medianFitnessLastRound}`);
-    console.log(`${generationCount} | Num Succeeded: ${numberSuccessLastRound}`);
+    performanceChart.addDataPoint(generationCount-1, numberSuccessLastRound);
+    performanceChart.renderChart();
+
+    // console.log(`${generationCount} | Average fitness: ${averageFitnessLastRound}`);
+    // console.log(`${generationCount} | Median fitness: ${medianFitnessLastRound}`);
+    // console.log(`${generationCount} | Num Succeeded: ${numberSuccessLastRound}`);
 
     for(let j = 0; j < organisms.length; j++) {
         // 4. Reproduction
@@ -104,7 +144,9 @@ function endRound() {
     // clear mating pool for next round
     matingPool = [];
 
-    loop();
+    if (!gamePaused) {
+        loop();
+    }
 }
 
 function getAverageFitness(values) {
@@ -122,7 +164,7 @@ function getMedianFitness(values) {
     var half = Math.floor(values.length / 2);
   
     if (values.length % 2)
-      return values[half];
+      return values[half].toFixed(2);
   
     return ((values[half - 1] + values[half]) / 2.0).toFixed(2);
 }
@@ -137,6 +179,9 @@ function getNumberSucceededLastRound() {
 }
 
 function generateOffspringFromMatingPool() {
+    // make sure mating pool is big enough
+    if (speciesDiedOff) return;
+
     // get random indexes to pick parents
     randomDadIndex = Math.trunc(random(matingPool.length));
     randomMomIndex = Math.trunc(random(matingPool.length));

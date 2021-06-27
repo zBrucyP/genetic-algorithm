@@ -9,7 +9,7 @@ class DNA {
 
     createGenes() {
         let result = [];
-        for (let i = 0; i < endRoundFrameCount+25; i++ ) {
+        for (let i = 0; i < maxEndRoundFrameCount; i++ ) {
             result.push(p5.Vector.random2D());
         }
         return result;

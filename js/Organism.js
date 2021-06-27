@@ -54,7 +54,7 @@ class Organism {
 
     addToMatingPoolNaturalSelection() {
         let selectionFactor = Math.trunc(this.fitness * 100);
-        if (this.fitness >= .95) selectionFactor *= 2;
+        if (this.fitness >= .95) selectionFactor *= 3;
         for(let j = 0; j < selectionFactor; j++) {
             matingPool.push(this);
         }
