@@ -104,12 +104,6 @@ function speciesHasDied() {
     gamePaused = true;
 }
 
-// function updateOrganismPosition() {
-//     for (let i = 0; i < organisms.length; i++) {
-//         organisms[i].updatePosition();
-//     }
-// }
-
 function endRound() {
     noLoop();
     frameCount = 0;
@@ -138,10 +132,6 @@ function endRound() {
     goalChart.renderChart();
     averageFitnessChart.renderChart();
     medianFitnessChart.renderChart();
-
-    // console.log(`${generationCount} | Average fitness: ${averageFitnessLastRound}`);
-    // console.log(`${generationCount} | Median fitness: ${medianFitnessLastRound}`);
-    // console.log(`${generationCount} | Num Succeeded: ${numberSuccessLastRound}`);
 
     for(let j = 0; j < organisms.length; j++) {
         // 4. Reproduction
