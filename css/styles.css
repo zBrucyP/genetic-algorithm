@@ -27,3 +27,7 @@ canvas {
     border-radius: .75em;
     width: 6em;
 }
+
+.chartsContainer {
+    display: flex;
+}

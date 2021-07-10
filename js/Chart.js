@@ -1,6 +1,7 @@
 class Chart {
-    constructor(title="Chart") {
+    constructor(title="Chart", elementId="chartContainer") {
         this.title = title;
+        this.elementId = elementId;
         this.dataPoints = [];
     }
 
@@ -9,7 +10,7 @@ class Chart {
     }
 
     renderChart() {
-        var chart = new CanvasJS.Chart("chartContainer",
+        var chart = new CanvasJS.Chart(this.elementId,
             {
                 title:{
                     text: this.title

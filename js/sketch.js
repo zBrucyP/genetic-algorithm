@@ -16,7 +16,9 @@ let numberSuccessLastRound = 0;
 let organismCount = 50;
 let speciesDiedOff = false;
 let gamePaused = false;
-let performanceChart = null;
+let goalChart = null;
+let averageFitnessChart = null;
+let medianFitnessChart = null;
 
 const maxEndRoundFrameCount = 600;
 
@@ -45,8 +47,8 @@ function draw() {
         text(`Frame: ${frameCount}`, width*.05, height*.15);
         text(`Last Gen:`, width*.03, height*.8);
         text(`Num Succeeded: ${numberSuccessLastRound}`, width*.05, height*.85);
-        text(`Average Fitness: ${averageFitnessLastRound}`, width*.05, height*.9);
-        text(`Median Fitness: ${medianFitnessLastRound}`, width*.05, height*.95);
+        text(`Average Fitness: ${averageFitnessLastRound*100}/100`, width*.05, height*.9);
+        text(`Median Fitness: ${medianFitnessLastRound*100}/100`, width*.05, height*.95);
     
         // check end of generation round condition
         if (frameCount > endRoundFrameCount) {
@@ -66,7 +68,9 @@ function initializeGame() {
     averageFitnessLastRound = 0;
     medianFitnessLastRound = 0;
     numberSuccessLastRound = 0;
-    performanceChart = new Chart("Number of Organisms at Goal");
+    goalChart = new Chart("Number of Organisms at Goal", "chartContainerGoal");
+    averageFitnessChart = new Chart("Average Fitness", "chartContainerAvgFitness");
+    medianFitnessChart = new Chart("Median Fitness", "chartContainerMedFitness");
     speciesDiedOff = false;
     gamePaused = false; 
 }
@@ -126,8 +130,14 @@ function endRound() {
     averageFitnessLastRound = getAverageFitness(fitnessScores);
     medianFitnessLastRound = getMedianFitness(fitnessScores);
     getNumberSucceededLastRound();
-    performanceChart.addDataPoint(generationCount-1, numberSuccessLastRound);
-    performanceChart.renderChart();
+    
+    goalChart.addDataPoint(generationCount-1, numberSuccessLastRound);
+    averageFitnessChart.addDataPoint(generationCount-1, averageFitnessLastRound*100);
+    medianFitnessChart.addDataPoint(generationCount-1, medianFitnessLastRound*100);
+    
+    goalChart.renderChart();
+    averageFitnessChart.renderChart();
+    medianFitnessChart.renderChart();
 
     // console.log(`${generationCount} | Average fitness: ${averageFitnessLastRound}`);
     // console.log(`${generationCount} | Median fitness: ${medianFitnessLastRound}`);
